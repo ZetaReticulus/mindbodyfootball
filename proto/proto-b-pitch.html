@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MBF — Prototype B · Pitch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#04070A; --ink-2:#090D12; --line:#1A2027; --chalk:#F2F1EC; --muted:#8B9199;
+  --teal:#00B48E; --aqua:#87E9E7; --green:#8EC66C; --slate:#5B8196;
+  --accent:var(--aqua); --accent-ink:#00191A;
+  --pad:clamp(20px,5vw,72px); --maxw:1320px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--chalk);font-family:'Space Grotesk',system-ui,sans-serif;
+  font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;
+  line-height:.88;letter-spacing:-.01em;text-wrap:balance}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad)}
+
+.protobar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(4,7,10,.9);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:10px var(--pad);font-size:12.5px;color:var(--muted)}
+.protobar b{color:var(--accent);font-family:'Anton',sans-serif;letter-spacing:.06em;
+  font-weight:400;font-size:14px}
+.protobar nav{display:flex;gap:8px}
+.protobar nav a{padding:5px 12px;border:1px solid var(--line);border-radius:100px;font-size:12px;transition:.2s}
+.protobar nav a:hover{border-color:var(--accent);color:var(--chalk)}
+.protobar nav a.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+
+/* hero: text sits ABOVE the pitch, pitch occupies lower half */
+.hero{position:relative;min-height:100svh;overflow:hidden;
+  display:flex;flex-direction:column;justify-content:flex-start;padding-top:clamp(96px,14vh,150px)}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+.hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(62% 38% at 50% 22%,rgba(4,7,10,.9) 0%,rgba(4,7,10,.4) 55%,transparent 84%)}
+.hero-inner{position:relative;z-index:2;width:100%;max-width:var(--maxw);margin:0 auto;
+  padding-inline:var(--pad);text-align:center}
+.eyebrow{font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--accent);
+  font-weight:600;display:inline-flex;align-items:center;gap:10px;justify-content:center}
+.eyebrow::before,.eyebrow::after{content:"";width:24px;height:1px;background:var(--accent)}
+h1{font-size:clamp(48px,9vw,132px);margin:20px auto 0;max-width:15ch}
+h1 .hl{color:var(--accent)}
+.sub{margin:22px auto 0;max-width:50ch;font-size:clamp(16px,1.8vw,19px);color:#C3C8CE}
+.acts{display:flex;flex-wrap:wrap;gap:13px;margin-top:30px;justify-content:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:52px;
+  padding:0 26px;border-radius:4px;font-weight:600;font-size:15px;border:1px solid transparent;
+  cursor:pointer;font-family:inherit;transition:transform .18s,background .18s,border-color .18s}
+.btn:hover{transform:translateY(-2px)}
+.btn-p{background:var(--accent);color:var(--accent-ink)}
+.btn-g{border-color:#2A333C;color:var(--chalk)}
+.btn-g:hover{border-color:var(--chalk)}
+
+/* HUD readout, bottom-left — reads like analysis software */
+.hud{position:absolute;left:var(--pad);bottom:clamp(24px,4vh,48px);z-index:3;
+  font-size:11px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;
+  display:flex;flex-direction:column;gap:7px;border-left:2px solid var(--accent);padding-left:12px}
+.hud b{color:var(--chalk);font-weight:600;font-family:'Space Grotesk'}
+.hud .live{display:flex;align-items:center;gap:7px}
+.hud .live i{width:6px;height:6px;border-radius:50%;background:var(--accent);
+  animation:blink 1.4s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+@media(max-width:820px){.hud{display:none}}
+
+.scrollcue{position:absolute;right:var(--pad);bottom:clamp(24px,4vh,48px);z-index:3;
+  font-size:11px;letter-spacing:.2em;color:var(--muted);writing-mode:vertical-rl}
+@media(max-width:820px){.scrollcue{display:none}}
+
+.strip{border-block:1px solid var(--line);background:var(--ink-2)}
+.strip .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line)}
+.stat{background:var(--ink-2);padding:26px 20px}
+.stat b{display:block;font-family:'Anton',sans-serif;font-size:clamp(24px,3vw,38px);color:var(--accent);font-weight:400}
+.stat span{font-size:12.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+@media(max-width:760px){.strip .wrap{grid-template-columns:repeat(2,1fr)}}
+
+section{padding:clamp(64px,10vh,120px) 0}
+.sechead h2{font-size:clamp(32px,5vw,64px);margin-top:16px}
+.sechead p{margin-top:18px;color:var(--muted);max-width:54ch}
+.note{margin-top:60px;padding:20px;border:1px dashed var(--line);border-radius:4px;color:var(--muted);font-size:14px}
+.note b{color:var(--accent)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="protobar">
+  <span><b>PROTO B</b> &nbsp;· Pitch — the scan before the pass</span>
+  <nav>
+    <a href="index.html">All</a>
+    <a href="proto-a-orbit.html">A · Orbit</a>
+    <a class="on" href="proto-b-pitch.html">B · Pitch</a>
+    <a href="proto-c-trails.html">C · Trails</a>
+  </nav>
+</div>
+
+<div class="hero">
+  <canvas id="gl"></canvas>
+  <div class="hero-inner">
+    <div class="eyebrow">Game footage analysis · Sydney</div>
+    <h1>See it <span class="hl">before</span><br>it happens.</h1>
+    <p class="sub">The best players have already scanned the pitch before the ball
+      arrives. We train that habit — then prove it on your own match footage.</p>
+    <div class="acts">
+      <a class="btn btn-p" href="#">Send us your footage</a>
+      <a class="btn btn-g" href="#">Book a trial session</a>
+    </div>
+  </div>
+  <div class="hud">
+    <span class="live"><i></i>Scan cycle · active</span>
+    <span><b>Vision cone</b> — what the player sees</span>
+    <span><b>Passing lanes</b> — what opens up</span>
+  </div>
+  <div class="scrollcue">SCROLL ↓</div>
+</div>
+
+<div class="strip">
+  <div class="wrap">
+    <div class="stat"><b>11</b><span>Clips per review</span></div>
+    <div class="stat"><b>48h</b><span>Turnaround</span></div>
+    <div class="stat"><b>3</b><span>Actions to train</span></div>
+    <div class="stat"><b>Remote</b><span>Anywhere in Australia</span></div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap sechead">
+    <div class="eyebrow">Prototype note</div>
+    <h2>The pitch is the product.</h2>
+    <p>A procedurally drawn football pitch in perspective — halfway line, centre circle,
+      penalty areas, all generated in code. A vision cone sweeps from the player node,
+      lighting up teammates as they enter view, and passing lanes flash when a line opens.
+      It's your Game Footage Analysis service, running live in the hero.</p>
+    <div class="note"><b>Interaction:</b> move your cursor to steer the vision cone —
+      you're the player scanning. Teammates light up as they enter your field of view.</div>
+  </div>
+</section>
+
+<script src="vendor/three.min.js"></script>
+<script>
+(function(){
+  const canvas = document.getElementById('gl');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!window.THREE) { console.error('three.js failed to load'); return; }
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x04070A, 0.021);
+  const camera = new THREE.PerspectiveCamera(52, 1, 0.1, 200);
+
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true}); }
+  catch(e){ console.error('WebGL unavailable', e); return; }
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+
+  const PITCH = new THREE.Group();
+  PITCH.rotation.x = -Math.PI/2;          // lay flat
+  scene.add(PITCH);
+
+  const AQUA = 0x87E9E7, TEAL = 0x00B48E, GREEN = 0x8EC66C, SLATE = 0x5B8196;
+  const W = 30, H = 20;                    // pitch dimensions
+
+  const lineMat = new THREE.LineBasicMaterial({color:0x7FA6BC, transparent:true, opacity:.72});
+  const disposables = [];
+  function addLine(points, mat){
+    const g = new THREE.BufferGeometry().setFromPoints(points);
+    disposables.push(g);
+    PITCH.add(new THREE.Line(g, mat || lineMat));
+  }
+  const V = (x,y) => new THREE.Vector3(x, y, 0);
+
+  // --- pitch markings (procedural) ---
+  addLine([V(-W/2,-H/2),V(W/2,-H/2),V(W/2,H/2),V(-W/2,H/2),V(-W/2,-H/2)]);   // touchlines
+  addLine([V(0,-H/2),V(0,H/2)]);                                             // halfway
+  // centre circle
+  {
+    const pts=[]; for(let i=0;i<=64;i++){const a=i/64*Math.PI*2; pts.push(V(Math.cos(a)*3.2, Math.sin(a)*3.2));}
+    addLine(pts);
+  }
+  // penalty boxes + six-yard boxes, both ends
+  [-1,1].forEach(s => {
+    addLine([V(s*W/2,-6.6),V(s*(W/2-6),-6.6),V(s*(W/2-6),6.6),V(s*W/2,6.6)]);
+    addLine([V(s*W/2,-3),V(s*(W/2-2.4),-3),V(s*(W/2-2.4),3),V(s*W/2,3)]);
+  });
+
+  // --- grass texture: faint dot grid, gives the plane depth ---
+  {
+    const g = new THREE.BufferGeometry(), pos = [];
+    for (let x = -W/2; x <= W/2; x += 0.62)
+      for (let y = -H/2; y <= H/2; y += 0.62) pos.push(x, y, 0);
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    disposables.push(g);
+    PITCH.add(new THREE.Points(g, new THREE.PointsMaterial({
+      color:0x1E4250, size:.06, transparent:true, opacity:.95})));
+  }
+
+  // --- players ---
+  const TEAM = [
+    {x:-2.5, y: 0.0, me:true},
+    {x: 4.0, y: 4.2}, {x: 6.5, y:-1.0}, {x: 2.0, y:-5.4},
+    {x: 9.0, y: 2.6}, {x: 0.5, y: 5.6},
+  ];
+  const OPP = [{x: 1.2, y: 1.8},{x: 5.0, y:-3.6},{x: 8.0, y: 5.0},{x:-0.5,y:-2.4}];
+
+  const players = [];
+  TEAM.forEach((p,i) => {
+    const g = new THREE.SphereGeometry(i===0 ? .34 : .26, 16, 16);
+    const m = new THREE.MeshBasicMaterial({color: i===0 ? AQUA : TEAL});
+    const mesh = new THREE.Mesh(g, m);
+    mesh.position.set(p.x, p.y, .3);
+    disposables.push(g);
+    PITCH.add(mesh);
+    // halo
+    const hg = new THREE.RingGeometry(i===0?.5:.4, i===0?.58:.46, 24);
+    const hm = new THREE.MeshBasicMaterial({color:i===0?AQUA:TEAL, transparent:true,
+      opacity:.35, side:THREE.DoubleSide});
+    const halo = new THREE.Mesh(hg, hm); halo.position.set(p.x,p.y,.05);
+    disposables.push(hg); PITCH.add(halo);
+    players.push({mesh, halo, mat:m, hmat:hm, base:new THREE.Vector2(p.x,p.y), me:!!p.me, i});
+  });
+  OPP.forEach(p => {
+    const g = new THREE.SphereGeometry(.24, 12, 12);
+    const m = new THREE.MeshBasicMaterial({color:0x3A4750});
+    const mesh = new THREE.Mesh(g, m); mesh.position.set(p.x, p.y, .28);
+    disposables.push(g); PITCH.add(mesh);
+  });
+
+  const ME = players[0];
+
+  // --- vision cone (the scan) ---
+  const CONE_ANGLE = Math.PI/3.4, CONE_LEN = 13;
+  const coneGeo = new THREE.BufferGeometry();
+  const SEG = 30;
+  {
+    const pos = new Float32Array((SEG+2)*3);
+    coneGeo.setAttribute('position', new THREE.BufferAttribute(pos,3));
+    const idx = [];
+    for (let i=1;i<=SEG;i++) idx.push(0, i, i+1);
+    coneGeo.setIndex(idx);
+  }
+  const coneMat = new THREE.MeshBasicMaterial({
+    color:AQUA, transparent:true, opacity:.13, side:THREE.DoubleSide,
+    blending:THREE.AdditiveBlending, depthWrite:false});
+  const cone = new THREE.Mesh(coneGeo, coneMat);
+  cone.position.z = .12;
+  PITCH.add(cone);
+  disposables.push(coneGeo);
+
+  function updateCone(heading){
+    const p = coneGeo.attributes.position;
+    p.setXYZ(0, ME.base.x, ME.base.y, 0);
+    for (let i=0;i<=SEG;i++){
+      const a = heading - CONE_ANGLE + (i/SEG)*CONE_ANGLE*2;
+      p.setXYZ(i+1, ME.base.x + Math.cos(a)*CONE_LEN, ME.base.y + Math.sin(a)*CONE_LEN, 0);
+    }
+    p.needsUpdate = true;
+    coneGeo.computeBoundingSphere();
+  }
+
+  // --- passing lanes: line from ME to each teammate, lit when in cone ---
+  const lanes = players.slice(1).map(pl => {
+    const g = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(ME.base.x, ME.base.y, .18),
+      new THREE.Vector3(pl.base.x, pl.base.y, .18)]);
+    const m = new THREE.LineBasicMaterial({color:GREEN, transparent:true, opacity:0,
+      blending:THREE.AdditiveBlending});
+    disposables.push(g);
+    const line = new THREE.Line(g, m); PITCH.add(line);
+    return {line, m, pl};
+  });
+
+  // --- pointer steering ---
+  let targetHeading = 0, heading = 0, auto = true, autoT = 0;
+  addEventListener('pointermove', e => {
+    const nx = (e.clientX/innerWidth)*2 - 1;
+    const ny = (e.clientY/innerHeight)*2 - 1;
+    targetHeading = Math.atan2(-ny*0.55 + 0.1, nx*1.15 + 0.35);
+    auto = false;
+    clearTimeout(window.__idle);
+    window.__idle = setTimeout(()=>{ auto = true; }, 2600);
+  }, {passive:true});
+
+  function resize(){
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    camera.aspect = w/Math.max(1,h); camera.updateProjectionMatrix();
+    renderer.setSize(w,h,false);
+    if (w >= 1024){ camera.position.set(0, -26, 22); PITCH.position.set(0,-7,0); PITCH.scale.setScalar(1); }
+    else          { camera.position.set(0, -24, 27); PITCH.position.set(0,-8,0); PITCH.scale.setScalar(.9); }
+    camera.lookAt(0, -5, 0);
+  }
+  addEventListener('resize', resize); resize();
+
+  let t = 0, raf;
+  function frame(){
+    raf = requestAnimationFrame(frame);
+    t += 0.016;
+
+    if (auto){ autoT += 0.0075; targetHeading = Math.sin(autoT)*0.95 + 0.15; }
+    let d = targetHeading - heading;
+    while (d >  Math.PI) d -= Math.PI*2;
+    while (d < -Math.PI) d += Math.PI*2;
+    heading += d * 0.06;
+    updateCone(heading);
+
+    // teammates drift slightly — a living pitch
+    players.forEach((p,i) => {
+      if (p.me) return;
+      const dx = Math.sin(t*0.42 + i*1.7)*0.5, dy = Math.cos(t*0.33 + i*2.1)*0.42;
+      const x = p.base.x + dx, y = p.base.y + dy;
+      p.mesh.position.set(x, y, .3); p.halo.position.set(x, y, .05);
+
+      // in the cone?
+      const ang = Math.atan2(y - ME.base.y, x - ME.base.x);
+      let da = ang - heading;
+      while (da >  Math.PI) da -= Math.PI*2;
+      while (da < -Math.PI) da += Math.PI*2;
+      const seen = Math.abs(da) < CONE_ANGLE;
+
+      const lane = lanes[i-1];
+      lane.m.opacity += ((seen ? .55 : 0) - lane.m.opacity) * 0.12;
+      p.hmat.opacity += ((seen ? .9 : .28) - p.hmat.opacity) * 0.12;
+      p.mat.color.lerp(new THREE.Color(seen ? GREEN : TEAL), .12);
+      p.halo.scale.setScalar(seen ? 1 + Math.sin(t*4+i)*0.09 : 1);
+
+      // keep the lane geometry attached to the moving player
+      const lp = lane.line.geometry.attributes.position;
+      lp.setXYZ(1, x, y, .18); lp.needsUpdate = true;
+    });
+
+    // gentle camera breathing
+    camera.position.x = Math.sin(t*0.16)*0.9;
+    camera.lookAt(0, -5, 0);
+
+    renderer.render(scene, camera);
+  }
+  if (!reduce) frame(); else { updateCone(0.2); renderer.render(scene, camera); }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) cancelAnimationFrame(raf); else if (!reduce) frame();
+  });
+})();
+</script>
+</body>
+</html>

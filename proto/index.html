@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mind Body Football — 3D Hero Prototypes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#05070A;--ink-2:#0A0E13;--line:#1B2229;--chalk:#F2F1EC;--muted:#8B9199;
+  --teal:#00B48E;--aqua:#87E9E7;--green:#8EC66C;--slate:#5B8196;
+  --pad:clamp(20px,5vw,64px);--maxw:1280px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--chalk);font-family:'Space Grotesk',system-ui,sans-serif;
+  font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Anton',sans-serif;font-weight:400;text-transform:uppercase;
+  line-height:.9;letter-spacing:-.01em}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad)}
+header{padding:clamp(56px,10vh,110px) 0 clamp(32px,5vh,56px);border-bottom:1px solid var(--line)}
+.eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--teal);
+  font-weight:600;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--teal)}
+h1{font-size:clamp(38px,7vw,86px);margin:18px 0 0;max-width:18ch}
+header p{margin-top:20px;color:var(--muted);max-width:60ch}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;padding:clamp(32px,6vh,64px) 0}
+@media(max-width:980px){.grid{grid-template-columns:1fr}}
+.card{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:var(--ink-2);
+  display:flex;flex-direction:column;transition:border-color .25s,transform .25s}
+.card:hover{transform:translateY(-4px)}
+.card.a:hover{border-color:var(--teal)} .card.b:hover{border-color:var(--aqua)}
+.card.c:hover{border-color:var(--green)}
+.thumb{aspect-ratio:16/10;position:relative;overflow:hidden;background:#000;border-bottom:1px solid var(--line)}
+.thumb canvas{width:100%;height:100%;display:block}
+.tag{position:absolute;top:10px;left:10px;font-size:10.5px;letter-spacing:.14em;
+  text-transform:uppercase;padding:5px 10px;border-radius:100px;font-weight:700;z-index:2}
+.a .tag{background:var(--teal);color:#00150F}
+.b .tag{background:var(--aqua);color:#00191A}
+.c .tag{background:var(--green);color:#0B1505}
+.body{padding:22px;display:flex;flex-direction:column;flex:1}
+.body h2{font-size:26px}
+.body .kick{font-size:11.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:9px}
+.body p{font-size:15px;color:var(--muted);margin-top:10px;flex:1}
+.meta{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);
+  display:flex;flex-wrap:wrap;gap:7px}
+.chip{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+  border:1px solid var(--line);border-radius:100px;padding:4px 10px}
+.open{margin-top:18px;display:inline-flex;align-items:center;justify-content:center;
+  min-height:46px;border-radius:4px;font-weight:600;font-size:14.5px}
+.a .open{background:var(--teal);color:#00150F} .b .open{background:var(--aqua);color:#00191A}
+.c .open{background:var(--green);color:#0B1505}
+.foot{border-top:1px solid var(--line);padding:clamp(40px,7vh,80px) 0;color:var(--muted);font-size:14.5px}
+.foot h3{color:var(--chalk);font-size:22px;margin-bottom:14px}
+.foot ul{list-style:none;display:flex;flex-direction:column;gap:9px;max-width:70ch}
+.foot li{display:flex;gap:11px}
+.foot li::before{content:"";width:5px;height:5px;border-radius:50%;background:var(--teal);
+  margin-top:9px;flex:none}
+code{background:var(--ink-2);border:1px solid var(--line);border-radius:3px;padding:1px 6px;
+  font-size:13px;overflow-wrap:anywhere}
+.foot li{display:flex;gap:11px;overflow-wrap:anywhere;min-width:0}
+img,canvas{max-width:100%}
+@media(max-width:640px){
+  .foot ul{font-size:13.5px}
+  .thumb{aspect-ratio:16/11}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <div class="eyebrow">Mind Body Football · three.js concepts</div>
+    <h1>Three 3D hero directions.</h1>
+    <p>Built in the ThreeUI idiom — fully procedural three.js, no model files, no stock
+      imagery, every scene driven by your four logo colours. Each is a complete hero you
+      can open full-screen and interact with.</p>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="grid">
+
+    <a class="card a" href="proto-a-orbit.html">
+      <div class="thumb"><span class="tag">A · Orbit</span><canvas id="ta"></canvas></div>
+      <div class="body">
+        <div class="kick">The brain in the ball</div>
+        <h2>Orbit</h2>
+        <p>A true truncated icosahedron — 12 pentagons and 20 hexagons, the same solid as a
+          real match ball. Panel seams are drawn as glowing tubes, with neural arcs firing
+          across the surface. Your logo, rebuilt in 3D.</p>
+        <div class="meta"><span class="chip">Literal brand</span><span class="chip">Drag to spin</span>
+          <span class="chip">Teal accent</span></div>
+        <span class="open">Open prototype A →</span>
+      </div>
+    </a>
+
+    <a class="card b" href="proto-b-pitch.html">
+      <div class="thumb"><span class="tag">B · Pitch</span><canvas id="tb"></canvas></div>
+      <div class="body">
+        <div class="kick">The scan before the pass</div>
+        <h2>Pitch</h2>
+        <p>A procedural pitch in perspective. A vision cone sweeps from the player, lighting
+          teammates as they enter view and flashing passing lanes as they open. Your analysis
+          service, running live.</p>
+        <div class="meta"><span class="chip">Sells analysis</span><span class="chip">Cursor steers cone</span>
+          <span class="chip">Aqua accent</span></div>
+        <span class="open">Open prototype B →</span>
+      </div>
+    </a>
+
+    <a class="card c" href="proto-c-trails.html">
+      <div class="thumb"><span class="tag">C · Trails</span><canvas id="tc"></canvas></div>
+      <div class="body">
+        <div class="kick">Movement made visible</div>
+        <h2>Trails</h2>
+        <p>Twelve light ribbons trace player runs through space — curving, accelerating,
+          cutting back. Abstract and premium: the feeling of movement without a single
+          photograph.</p>
+        <div class="meta"><span class="chip">Most premium</span><span class="chip">Parallax + scroll</span>
+          <span class="chip">Green accent</span></div>
+        <span class="open">Open prototype C →</span>
+      </div>
+    </a>
+
+  </div>
+</div>
+
+<div class="foot">
+  <div class="wrap">
+    <h3>How these were built</h3>
+    <ul>
+      <li>Procedural three.js in the ThreeUI style — geometry generated in code, so there
+        are no <code>.glb</code> model files and nothing to download.</li>
+      <li>three.js r149 (MIT) is vendored locally at <code>proto/vendor/</code>, so the
+        prototypes work offline and can't break from a CDN outage.</li>
+      <li>Every scene uses only your logo colours: teal <code>#00B48E</code>,
+        aqua <code>#87E9E7</code>, green <code>#8EC66C</code>, slate <code>#5B8196</code>.</li>
+      <li>All three honour <code>prefers-reduced-motion</code> and pause rendering when the
+        tab is hidden, so they don't drain a phone battery.</li>
+      <li>Credit: technique adapted from Meng To's open-source
+        <a href="https://github.com/MengTo/threeui" style="color:var(--teal)">ThreeUI</a> (MIT).</li>
+    </ul>
+  </div>
+</div>
+
+<script src="vendor/three.min.js"></script>
+<script>
+// Lightweight looping thumbnails — one tiny scene per card.
+(function(){
+  if (!window.THREE) return;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const scenes = [];
+
+  function mk(id, build){
+    const canvas = document.getElementById(id);
+    if (!canvas) return;
+    let renderer;
+    try { renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true}); }
+    catch(e){ return; }
+    renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45,1,0.1,100);
+    camera.position.z = 6;
+    const api = build(scene, camera);
+    function size(){
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      if (!w||!h) return;
+      camera.aspect = w/h; camera.updateProjectionMatrix(); renderer.setSize(w,h,false);
+    }
+    size(); addEventListener('resize', size);
+    scenes.push({renderer, scene, camera, api, size});
+  }
+
+  // A — truncated-icosahedron football
+  mk('ta', (scene) => {
+    const g = new THREE.Group(); scene.add(g);
+    const R = 2;
+    const ico = new THREE.IcosahedronGeometry(R, 0);
+    const tris = [];
+    { const p = ico.attributes.position;
+      for (let i=0;i<p.count;i+=3) tris.push([
+        new THREE.Vector3(p.getX(i),p.getY(i),p.getZ(i)),
+        new THREE.Vector3(p.getX(i+1),p.getY(i+1),p.getZ(i+1)),
+        new THREE.Vector3(p.getX(i+2),p.getY(i+2),p.getZ(i+2))]); }
+    ico.dispose();
+    const pent=[]; tris.flat().forEach(v=>{ if(!pent.some(u=>u.distanceToSquared(v)<1e-6)) pent.push(v.clone()); });
+    const hexC = tris.map(t=>t[0].clone().add(t[1]).add(t[2]).divideScalar(3).setLength(R));
+    const seeds=[...pent.map(v=>({d:v.clone().normalize(),p:true,b:0.027})),
+                 ...hexC.map(v=>({d:v.clone().normalize(),p:false,b:0}))];
+    const N=3000, pos=new Float32Array(N*3), col=new Float32Array(N*3);
+    const cA=new THREE.Color(0x87E9E7), cH=new THREE.Color(0x00B48E).lerp(new THREE.Color(0x5B8196),.35);
+    const dir=new THREE.Vector3(); let n=0;
+    for(let i=0;i<N;i++){
+      const phi=Math.acos(1-2*(i+.5)/N), th=Math.PI*(1+Math.sqrt(5))*i;
+      dir.set(Math.cos(th)*Math.sin(phi),Math.sin(th)*Math.sin(phi),Math.cos(phi));
+      let b1=-Infinity,b2=-Infinity,ip=false;
+      for(const s of seeds){const d=dir.dot(s.d)-s.b; if(d>b1){b2=b1;b1=d;ip=s.p;} else if(d>b2)b2=d;}
+      if(b1-b2<0.03) continue;
+      pos[n*3]=dir.x*R; pos[n*3+1]=dir.y*R; pos[n*3+2]=dir.z*R;
+      const c=(ip?cA:cH); col[n*3]=c.r; col[n*3+1]=c.g; col[n*3+2]=c.b; n++;
+    }
+    const geo=new THREE.BufferGeometry();
+    geo.setAttribute('position',new THREE.BufferAttribute(pos.slice(0,n*3),3));
+    geo.setAttribute('color',new THREE.BufferAttribute(col.slice(0,n*3),3));
+    g.add(new THREE.Points(geo,new THREE.PointsMaterial({size:.03,vertexColors:true,
+      transparent:true,opacity:.9,blending:THREE.AdditiveBlending,depthWrite:false})));
+    // seams
+    const sm=new THREE.MeshBasicMaterial({color:0x87E9E7,transparent:true,opacity:.6,
+      blending:THREE.AdditiveBlending,depthWrite:false});
+    const SR=R*1.012;
+    tris.forEach(([A,B,C])=>{
+      const cor=[A.clone().lerp(B,1/3),A.clone().lerp(B,2/3),B.clone().lerp(C,1/3),
+                 B.clone().lerp(C,2/3),C.clone().lerp(A,1/3),C.clone().lerp(A,2/3)]
+                 .map(v=>v.setLength(SR));
+      const pts=[]; for(let i=0;i<6;i++){const a=cor[i],b=cor[(i+1)%6];
+        for(let s=0;s<4;s++) pts.push(a.clone().lerp(b,s/4).setLength(SR));}
+      g.add(new THREE.Mesh(new THREE.TubeGeometry(
+        new THREE.CatmullRomCurve3(pts,true,'catmullrom',.5),60,.016,4,true), sm));
+    });
+    for (let i=0;i<2;i++){
+      const p2=[], rr=R*(1.2+i*.12);
+      for(let p=0;p<=70;p++){const a=p/70*Math.PI*2; p2.push(new THREE.Vector3(Math.cos(a)*rr,Math.sin(a)*rr,Math.sin(a*3)*.14));}
+      const l=new THREE.Line(new THREE.BufferGeometry().setFromPoints(p2),
+        new THREE.LineBasicMaterial({color:0x00B48E,transparent:true,opacity:.3,blending:THREE.AdditiveBlending}));
+      l.rotation.set(Math.random()*3,Math.random()*3,Math.random()*3); g.add(l);
+    }
+    return t => { g.rotation.y = t*.13; g.rotation.x = Math.sin(t*.12)*.16; };
+  });
+
+  // B — pitch
+  mk('tb', (scene, camera) => {
+    const g = new THREE.Group(); g.rotation.x = -Math.PI/2.35; scene.add(g);
+    camera.position.set(0,0,7.4);
+    const m = new THREE.LineBasicMaterial({color:0x7FA6BC,transparent:true,opacity:.7});
+    const V=(x,y)=>new THREE.Vector3(x,y,0);
+    const W=8,H=5.2;
+    const add=p=>g.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(p),m));
+    add([V(-W/2,-H/2),V(W/2,-H/2),V(W/2,H/2),V(-W/2,H/2),V(-W/2,-H/2)]);
+    add([V(0,-H/2),V(0,H/2)]);
+    {const p=[];for(let i=0;i<=48;i++){const a=i/48*Math.PI*2;p.push(V(Math.cos(a)*.95,Math.sin(a)*.95));}add(p);}
+    [-1,1].forEach(s=>add([V(s*W/2,-1.7),V(s*(W/2-1.5),-1.7),V(s*(W/2-1.5),1.7),V(s*W/2,1.7)]));
+    // cone
+    const SEG=26, cg=new THREE.BufferGeometry();
+    cg.setAttribute('position',new THREE.BufferAttribute(new Float32Array((SEG+2)*3),3));
+    const idx=[];for(let i=1;i<=SEG;i++)idx.push(0,i,i+1); cg.setIndex(idx);
+    const cone=new THREE.Mesh(cg,new THREE.MeshBasicMaterial({color:0x87E9E7,transparent:true,
+      opacity:.17,side:THREE.DoubleSide,blending:THREE.AdditiveBlending,depthWrite:false}));
+    cone.position.z=.05; g.add(cone);
+    const me=new THREE.Mesh(new THREE.SphereGeometry(.13,12,12),new THREE.MeshBasicMaterial({color:0x87E9E7}));
+    me.position.set(-1,0,.16); g.add(me);
+    const mates=[];
+    [[1.6,1.2],[2.6,-.7],[.6,-1.6],[3.2,.6]].forEach(([x,y])=>{
+      const s=new THREE.Mesh(new THREE.SphereGeometry(.1,10,10),new THREE.MeshBasicMaterial({color:0x00B48E}));
+      s.position.set(x,y,.16); g.add(s); mates.push(s);
+    });
+    return t => {
+      const head = Math.sin(t*.55)*.85;
+      const p = cg.attributes.position;
+      p.setXYZ(0,-1,0,0);
+      for(let i=0;i<=SEG;i++){
+        const a = head - .5 + (i/SEG); 
+        p.setXYZ(i+1, -1+Math.cos(a)*5.4, Math.sin(a)*5.4, 0);
+      }
+      p.needsUpdate = true;
+      mates.forEach((s,i)=>{
+        const ang=Math.atan2(s.position.y, s.position.x+1);
+        let d=ang-head; while(d>Math.PI)d-=6.283; while(d<-Math.PI)d+=6.283;
+        s.material.color.lerp(new THREE.Color(Math.abs(d)<.5?0x8EC66C:0x00B48E),.1);
+      });
+    };
+  });
+
+  // C — ribbons
+  mk('tc', (scene, camera) => {
+    const g = new THREE.Group(); scene.add(g);
+    camera.position.z = 9;
+    const PAL=[0x00B48E,0x87E9E7,0x8EC66C,0x5B8196];
+    for(let i=0;i<7;i++){
+      const pts=[], lane=(i-3.5)*1.05, amp=1+Math.random()*1.4, ph=Math.random()*6.28;
+      for(let s=0;s<=26;s++){const u=s/26;
+        pts.push(new THREE.Vector3((u-.5)*15, lane+Math.sin(u*Math.PI*1.7+ph)*amp*(.4+u*.7),
+          Math.cos(u*Math.PI*1.4+ph)*1.6));}
+      const geo=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),50,.035,6,false);
+      g.add(new THREE.Mesh(geo,new THREE.MeshBasicMaterial({color:PAL[i%4],transparent:true,
+        opacity:.5,blending:THREE.AdditiveBlending,depthWrite:false})));
+    }
+    return t => { g.rotation.y = Math.sin(t*.22)*.32; g.rotation.x = Math.cos(t*.18)*.14; };
+  });
+
+  let t=0;
+  function loop(){
+    requestAnimationFrame(loop);
+    t += 0.016;
+    scenes.forEach(s => { s.size(); s.api && s.api(t); s.renderer.render(s.scene, s.camera); });
+  }
+  if (!reduce) loop();
+  else scenes.forEach(s => { s.api && s.api(0); s.renderer.render(s.scene, s.camera); });
+})();
+</script>
+</body>
+</html>

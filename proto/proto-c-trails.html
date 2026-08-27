@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MBF — Prototype C · Trails</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#050609; --ink-2:#0A0D11; --line:#1A2027; --chalk:#F2F1EC; --muted:#8B9199;
+  --teal:#00B48E; --aqua:#87E9E7; --green:#8EC66C; --slate:#5B8196;
+  --accent:var(--green); --accent-ink:#0B1505;
+  --pad:clamp(20px,5vw,72px); --maxw:1320px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--chalk);font-family:'Space Grotesk',system-ui,sans-serif;
+  font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;
+  line-height:.88;letter-spacing:-.01em;text-wrap:balance}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad)}
+
+.protobar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,6,9,.9);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:10px var(--pad);font-size:12.5px;color:var(--muted)}
+.protobar b{color:var(--accent);font-family:'Anton',sans-serif;letter-spacing:.06em;font-weight:400;font-size:14px}
+.protobar nav{display:flex;gap:8px}
+.protobar nav a{padding:5px 12px;border:1px solid var(--line);border-radius:100px;font-size:12px;transition:.2s}
+.protobar nav a:hover{border-color:var(--accent);color:var(--chalk)}
+.protobar nav a.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+
+/* split hero: type left, ribbons right */
+.hero{position:relative;min-height:100svh;display:grid;
+  grid-template-columns:1.02fr 1fr;align-items:center;overflow:hidden;padding-top:44px}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+.hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(90deg,rgba(5,6,9,.97) 0%,rgba(5,6,9,.86) 30%,rgba(5,6,9,.18) 58%,transparent 74%)}
+.hero-inner{position:relative;z-index:2;padding-inline:var(--pad);max-width:760px;
+  justify-self:end;width:100%}
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr}
+  .hero::after{background:linear-gradient(0deg,rgba(5,6,9,.96) 26%,rgba(5,6,9,.5) 60%,transparent 88%)}
+  .hero-inner{justify-self:start;align-self:end;padding-bottom:clamp(40px,8vh,90px)}
+}
+.eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);
+  font-weight:600;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--accent)}
+h1{font-size:clamp(48px,8.6vw,124px);margin:20px 0 0;max-width:13ch}
+h1 .hl{color:var(--accent)}
+.sub{margin-top:22px;max-width:44ch;font-size:clamp(16px,1.8vw,19px);color:#C3C8CE}
+.acts{display:flex;flex-wrap:wrap;gap:13px;margin-top:30px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:52px;
+  padding:0 26px;border-radius:4px;font-weight:600;font-size:15px;border:1px solid transparent;
+  cursor:pointer;font-family:inherit;transition:transform .18s,background .18s,border-color .18s}
+.btn:hover{transform:translateY(-2px)}
+.btn-p{background:var(--accent);color:var(--accent-ink)}
+.btn-g{border-color:#2A333C;color:var(--chalk)}
+.btn-g:hover{border-color:var(--chalk)}
+.pillars{display:flex;gap:26px;margin-top:36px;padding-top:24px;border-top:1px solid var(--line);
+  flex-wrap:wrap}
+.pil{font-size:12.5px;letter-spacing:.05em}
+.pil b{display:block;font-family:'Anton',sans-serif;font-size:19px;font-weight:400;
+  color:var(--chalk);letter-spacing:.02em}
+.pil span{color:var(--muted);text-transform:uppercase;font-size:11px;letter-spacing:.14em}
+
+.strip{border-block:1px solid var(--line);background:var(--ink-2)}
+.strip .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line)}
+.stat{background:var(--ink-2);padding:26px 20px}
+.stat b{display:block;font-family:'Anton',sans-serif;font-size:clamp(24px,3vw,38px);color:var(--accent);font-weight:400}
+.stat span{font-size:12.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+@media(max-width:760px){.strip .wrap{grid-template-columns:repeat(2,1fr)}}
+
+section{padding:clamp(64px,10vh,120px) 0}
+.sechead h2{font-size:clamp(32px,5vw,64px);margin-top:16px}
+.sechead p{margin-top:18px;color:var(--muted);max-width:54ch}
+.note{margin-top:60px;padding:20px;border:1px dashed var(--line);border-radius:4px;color:var(--muted);font-size:14px}
+.note b{color:var(--accent)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="protobar">
+  <span><b>PROTO C</b> &nbsp;· Trails — movement made visible</span>
+  <nav>
+    <a href="index.html">All</a>
+    <a href="proto-a-orbit.html">A · Orbit</a>
+    <a href="proto-b-pitch.html">B · Pitch</a>
+    <a class="on" href="proto-c-trails.html">C · Trails</a>
+  </nav>
+</div>
+
+<div class="hero">
+  <canvas id="gl"></canvas>
+  <div class="hero-inner">
+    <div class="eyebrow">Individual &amp; small-group coaching</div>
+    <h1>The half-yard <span class="hl">you don't see.</span></h1>
+    <p class="sub">First step, body shape, the run that buys a second. We coach the
+      movement that turns a contested ball into a free one — and hold it there at
+      minute 70.</p>
+    <div class="acts">
+      <a class="btn btn-p" href="#">Book a trial session</a>
+      <a class="btn btn-g" href="#">Junior program · Fri 5–6pm</a>
+    </div>
+    <div class="pillars">
+      <div class="pil"><b>01</b><span>Awareness</span></div>
+      <div class="pil"><b>02</b><span>Movement</span></div>
+      <div class="pil"><b>03</b><span>Execution</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="strip">
+  <div class="wrap">
+    <div class="stat"><b>6–18</b><span>Junior ages</span></div>
+    <div class="stat"><b>2–6</b><span>Small group</span></div>
+    <div class="stat"><b>1:1</b><span>Individual</span></div>
+    <div class="stat"><b>Teams</b><span>Clubs &amp; schools</span></div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap sechead">
+    <div class="eyebrow">Prototype note</div>
+    <h2>Movement, drawn as light.</h2>
+    <p>Twelve ribbons trace player runs through 3D space — curving, accelerating,
+      cutting back. Each is a tube built along a procedural curve, coloured with your
+      brand gradient and lit from within. It's abstract rather than literal: the feeling
+      of movement and intelligence, without a stock photo in sight.</p>
+    <div class="note"><b>Interaction:</b> the ribbon field parallaxes with your cursor
+      and accelerates as you scroll — the faster you move, the faster the runs.</div>
+  </div>
+</section>
+
+<script src="vendor/three.min.js"></script>
+<script>
+(function(){
+  const canvas = document.getElementById('gl');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!window.THREE) { console.error('three.js failed to load'); return; }
+
+  const scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x050609, 0.03);
+  const camera = new THREE.PerspectiveCamera(48, 1, 0.1, 120);
+  camera.position.set(0, 0, 22);
+
+  let renderer;
+  try { renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true}); }
+  catch(e){ console.error('WebGL unavailable', e); return; }
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+
+  const FIELD = new THREE.Group(); scene.add(FIELD);
+
+  const PALETTE = [0x00B48E, 0x87E9E7, 0x8EC66C, 0x5B8196];
+  const RIBBONS = 12;
+  const ribbons = [];
+  const disposables = [];
+
+  // Each ribbon = a tube along a procedurally generated 3D curve.
+  for (let i = 0; i < RIBBONS; i++){
+    const pts = [];
+    const laneY = (i - RIBBONS/2) * 1.5 + (Math.random()-.5)*0.8;
+    const amp   = 2.2 + Math.random()*2.4;
+    const freq  = 0.55 + Math.random()*0.75;
+    const phase = Math.random()*Math.PI*2;
+    const depth = (Math.random()-.5) * 9;
+
+    for (let s = 0; s <= 40; s++){
+      const u = s/40;
+      const x = (u - .5) * 34;
+      // a run: accelerate, curve, cut back
+      const y = laneY + Math.sin(u*Math.PI*freq*2 + phase) * amp * (0.35 + u*0.8);
+      const z = depth + Math.cos(u*Math.PI*1.6 + phase) * 2.6;
+      pts.push(new THREE.Vector3(x, y, z));
+    }
+    const curve = new THREE.CatmullRomCurve3(pts);
+    const geo = new THREE.TubeGeometry(curve, 90, 0.035 + Math.random()*0.045, 7, false);
+    disposables.push(geo);
+
+    const col = new THREE.Color(PALETTE[i % PALETTE.length]);
+    const mat = new THREE.MeshBasicMaterial({
+      color: col, transparent:true, opacity: .32 + Math.random()*0.3,
+      blending: THREE.AdditiveBlending, depthWrite:false
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    FIELD.add(mesh);
+
+    // a bright "player" node that travels the curve
+    const nodeG = new THREE.SphereGeometry(0.11, 12, 12);
+    const nodeM = new THREE.MeshBasicMaterial({color: col});
+    const node = new THREE.Mesh(nodeG, nodeM);
+    FIELD.add(node);
+    disposables.push(nodeG);
+
+    // glow halo around the node
+    const haloG = new THREE.SphereGeometry(0.3, 12, 12);
+    const haloM = new THREE.MeshBasicMaterial({color: col, transparent:true,
+      opacity:.22, blending:THREE.AdditiveBlending, depthWrite:false});
+    const halo = new THREE.Mesh(haloG, haloM);
+    FIELD.add(halo);
+    disposables.push(haloG);
+
+    ribbons.push({
+      mesh, mat, node, halo, haloM, curve,
+      t: Math.random(),
+      speed: 0.055 + Math.random()*0.075,
+      pulse: Math.random()*Math.PI*2
+    });
+  }
+
+  // faint depth dust
+  {
+    const g = new THREE.BufferGeometry(), p = [];
+    for (let i = 0; i < 900; i++)
+      p.push((Math.random()-.5)*46, (Math.random()-.5)*26, (Math.random()-.5)*24);
+    g.setAttribute('position', new THREE.Float32BufferAttribute(p,3));
+    disposables.push(g);
+    FIELD.add(new THREE.Points(g, new THREE.PointsMaterial({
+      color:0x2C3A44, size:.05, transparent:true, opacity:.6})));
+  }
+
+  // pointer parallax + scroll acceleration
+  const tgt = {x:0,y:0}, cur = {x:0,y:0};
+  addEventListener('pointermove', e => {
+    tgt.x = ((e.clientY/innerHeight)*2-1) * 0.16;
+    tgt.y = ((e.clientX/innerWidth)*2-1) * 0.28;
+  }, {passive:true});
+
+  let boost = 0, lastY = scrollY;
+  addEventListener('scroll', () => {
+    boost = Math.min(boost + Math.abs(scrollY-lastY)*0.004, 1.6); lastY = scrollY;
+  }, {passive:true});
+
+  function resize(){
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    camera.aspect = w/Math.max(1,h); camera.updateProjectionMatrix();
+    renderer.setSize(w,h,false);
+    if (w >= 900){ FIELD.position.set(6.5, 0, 0); FIELD.scale.setScalar(1); camera.position.z = 20; }
+    else         { FIELD.position.set(0, 2.5, 0); FIELD.scale.setScalar(.82); camera.position.z = 24; }
+  }
+  addEventListener('resize', resize); resize();
+
+  const tmp = new THREE.Vector3();
+  let t = 0, raf;
+  function frame(){
+    raf = requestAnimationFrame(frame);
+    t += 0.016;
+    boost *= 0.95;
+
+    cur.x += (tgt.x-cur.x)*0.045;
+    cur.y += (tgt.y-cur.y)*0.045;
+    FIELD.rotation.x = cur.x;
+    FIELD.rotation.y = cur.y + Math.sin(t*0.1)*0.05;
+
+    ribbons.forEach((r,i) => {
+      r.t += (r.speed + boost*0.05) * 0.016;
+      if (r.t > 1) r.t -= 1;
+      r.curve.getPointAt(r.t, tmp);
+      r.node.position.copy(tmp);
+      r.halo.position.copy(tmp);
+
+      const pulse = 0.5 + Math.sin(t*2.2 + r.pulse)*0.5;
+      r.haloM.opacity = 0.12 + pulse*0.26;
+      r.halo.scale.setScalar(0.85 + pulse*0.5);
+      r.mat.opacity = 0.26 + pulse*0.22 + boost*0.05;
+    });
+
+    renderer.render(scene, camera);
+  }
+  if (!reduce) frame(); else renderer.render(scene, camera);
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) cancelAnimationFrame(raf); else if (!reduce) frame();
+  });
+})();
+</script>
+</body>
+</html>

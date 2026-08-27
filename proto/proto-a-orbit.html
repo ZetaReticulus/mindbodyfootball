@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MBF — Prototype A · Orbit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#05070A; --ink-2:#0A0E13; --line:#1B2229; --chalk:#F2F1EC; --muted:#8B9199;
+  --teal:#00B48E; --aqua:#87E9E7; --green:#8EC66C; --slate:#5B8196;
+  --accent:var(--teal); --accent-ink:#00150F;
+  --pad:clamp(20px,5vw,72px); --maxw:1320px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--chalk);font-family:'Space Grotesk',system-ui,sans-serif;
+  font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-family:'Anton',Impact,sans-serif;font-weight:400;text-transform:uppercase;
+  line-height:.9;letter-spacing:-.01em;text-wrap:balance}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--pad)}
+
+/* ---- proto chrome ---- */
+.protobar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(5,7,10,.9);
+  backdrop-filter:blur(12px);border-bottom:1px solid var(--line);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:10px var(--pad);font-size:12.5px;color:var(--muted)}
+.protobar b{color:var(--accent);font-family:'Anton',sans-serif;letter-spacing:.06em;
+  font-weight:400;font-size:14px}
+.protobar nav{display:flex;gap:8px}
+.protobar nav a{padding:5px 12px;border:1px solid var(--line);border-radius:100px;
+  font-size:12px;transition:.2s}
+.protobar nav a:hover{border-color:var(--accent);color:var(--chalk)}
+.protobar nav a.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+
+/* ---- hero ---- */
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;
+  overflow:hidden;padding-top:44px}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0}
+.hero::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:linear-gradient(90deg,rgba(5,7,10,.94) 0%,rgba(5,7,10,.72) 34%,transparent 62%),
+             linear-gradient(0deg,rgba(5,7,10,.9) 0%,transparent 40%)}
+@media(max-width:1023px){
+  /* ball sits high, type gets a solid bed underneath it */
+  .hero{align-items:flex-end;padding-bottom:clamp(28px,5vh,60px)}
+  .hero::after{background:linear-gradient(0deg,
+    rgba(5,7,10,.97) 0%,rgba(5,7,10,.95) 46%,rgba(5,7,10,.72) 62%,rgba(5,7,10,.15) 82%,transparent 100%)}
+}
+.hero-inner{position:relative;z-index:2;width:100%;max-width:var(--maxw);
+  margin:0 auto;padding-inline:var(--pad)}
+.eyebrow{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--accent);
+  font-weight:600;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--accent)}
+h1{font-size:clamp(46px,8vw,116px);margin:20px 0 0;max-width:12ch}
+h1 .hl{color:var(--accent)}
+.sub{margin-top:24px;max-width:46ch;font-size:clamp(16px,1.8vw,19px);color:#C3C8CE}
+.acts{display:flex;flex-wrap:wrap;gap:13px;margin-top:32px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:52px;
+  padding:0 26px;border-radius:4px;font-weight:600;font-size:15px;border:1px solid transparent;
+  cursor:pointer;font-family:inherit;transition:transform .18s,background .18s,border-color .18s}
+.btn:hover{transform:translateY(-2px)}
+.btn-p{background:var(--accent);color:var(--accent-ink)}
+.btn-g{border-color:var(--line);color:var(--chalk)}
+.btn-g:hover{border-color:var(--chalk)}
+.hero-meta{display:flex;flex-wrap:wrap;gap:8px 28px;margin-top:34px;padding-top:24px;
+  border-top:1px solid var(--line);font-size:13px;color:var(--muted);max-width:52ch}
+.hero-meta b{color:var(--chalk)}
+
+/* orbit legend */
+.legend{position:absolute;right:var(--pad);bottom:clamp(28px,5vh,56px);z-index:2;
+  display:flex;flex-direction:column;gap:9px;font-size:11.5px;color:var(--muted);
+  text-align:right;letter-spacing:.04em}
+.legend i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-left:9px}
+@media(max-width:900px){.legend{display:none}}
+
+/* ---- proof strip ---- */
+.strip{border-block:1px solid var(--line);background:var(--ink-2)}
+.strip .wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line)}
+.stat{background:var(--ink-2);padding:26px 20px}
+.stat b{display:block;font-family:'Anton',sans-serif;font-size:clamp(24px,3vw,38px);
+  color:var(--accent);font-weight:400}
+.stat span{font-size:12.5px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+@media(max-width:760px){.strip .wrap{grid-template-columns:repeat(2,1fr)}}
+
+section{padding:clamp(64px,10vh,120px) 0}
+.sechead h2{font-size:clamp(32px,5vw,64px);margin-top:16px}
+.sechead p{margin-top:18px;color:var(--muted);max-width:54ch}
+.note{margin-top:60px;padding:20px;border:1px dashed var(--line);border-radius:4px;
+  color:var(--muted);font-size:14px}
+.note b{color:var(--accent)}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="protobar">
+  <span><b>PROTO A</b> &nbsp;· Orbit — the brain in the ball</span>
+  <nav>
+    <a href="index.html">All</a>
+    <a class="on" href="proto-a-orbit.html">A · Orbit</a>
+    <a href="proto-b-pitch.html">B · Pitch</a>
+    <a href="proto-c-trails.html">C · Trails</a>
+  </nav>
+</div>
+
+<div class="hero">
+  <canvas id="gl"></canvas>
+  <div class="hero-inner">
+    <div class="eyebrow">Macquarie Park &amp; North Ryde · Sydney</div>
+    <h1>Train the <span class="hl">mind</span> inside the game.</h1>
+    <p class="sub">Awareness, movement and execution — coached as three trainable
+      skills, not three words on a wall. Individual, small-group and team football
+      in Sydney's north.</p>
+    <div class="acts">
+      <a class="btn btn-p" href="#">Book a trial session</a>
+      <a class="btn btn-g" href="#">See the method</a>
+    </div>
+    <div class="hero-meta">
+      <span><b>Ages 6–18</b> + seniors</span>
+      <span><b>Fri 5–6pm</b> Junior Development</span>
+      <span><b>Video analysis</b> included</span>
+    </div>
+  </div>
+  <div class="legend">
+    <span>Neural firing — awareness <i style="background:var(--green)"></i></span>
+    <span>Panel seams — the ball <i style="background:var(--aqua)"></i></span>
+    <span>Orbits — movement <i style="background:var(--teal)"></i></span>
+  </div>
+</div>
+
+<div class="strip">
+  <div class="wrap">
+    <div class="stat"><b>1:1</b><span>Individual coaching</span></div>
+    <div class="stat"><b>2–6</b><span>Small group size</span></div>
+    <div class="stat"><b>60min</b><span>Every session</span></div>
+    <div class="stat"><b>Els Park</b><span>Field 3, North Ryde</span></div>
+  </div>
+</div>
+
+<section>
+  <div class="wrap sechead">
+    <div class="eyebrow">Prototype note</div>
+    <h2>A real match ball, built from maths.</h2>
+    <p>This is a genuine truncated icosahedron — 12 pentagons and 20 hexagons, the same
+      solid every modern football is stitched from. The panel layout is computed as a
+      spherical Voronoi diagram over 32 seed points, so the seams are geometrically
+      correct rather than drawn by hand. Seams render as glowing tubes, neural arcs fire
+      across the surface, and orbit rings trace movement around it. No images, no model
+      files — all of it generated in code from your four brand colours.</p>
+    <div class="note"><b>Interaction:</b> the sphere responds to your cursor —
+      move the mouse across the hero and the ball tilts toward it. Scroll speed also
+      feeds the rotation. Drag to spin it directly.</div>
+  </div>
+</section>
+
+<script src="vendor/three.min.js"></script>
+<script>
+(function(){
+  const canvas = document.getElementById('gl');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!window.THREE) { console.error('three.js failed to load'); return; }
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+  camera.position.z = 6.2;
+
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({canvas, alpha:true, antialias:true});
+  } catch(e) { console.error('WebGL unavailable', e); return; }
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+
+  const BALL = new THREE.Group(); scene.add(BALL);
+  window.__ballRef = BALL;   // debug handle for automated speed checks
+
+  const C_TEAL  = new THREE.Color(0x00B48E);
+  const C_AQUA  = new THREE.Color(0x87E9E7);
+  const C_GREEN = new THREE.Color(0x8EC66C);
+  const C_SLATE = new THREE.Color(0x5B8196);
+
+  const R = 2.15;
+  const COUNT = 15000;
+
+  /* ============================================================
+     TRUNCATED ICOSAHEDRON — the actual modern football solid.
+     12 pentagons + 20 hexagons = 32 panels.
+     Built from an icosahedron: every face becomes a hexagon,
+     every vertex becomes a pentagon.
+     ============================================================ */
+  const ico = new THREE.IcosahedronGeometry(R, 0);
+  const tris = [];
+  {
+    const p = ico.attributes.position;
+    for (let i = 0; i < p.count; i += 3){
+      tris.push([
+        new THREE.Vector3(p.getX(i),   p.getY(i),   p.getZ(i)),
+        new THREE.Vector3(p.getX(i+1), p.getY(i+1), p.getZ(i+1)),
+        new THREE.Vector3(p.getX(i+2), p.getY(i+2), p.getZ(i+2))
+      ]);
+    }
+  }
+  ico.dispose();
+
+  // 12 icosahedron vertices -> pentagon centres
+  const pentCentres = [];
+  tris.flat().forEach(v => {
+    if (!pentCentres.some(u => u.distanceToSquared(v) < 1e-6)) pentCentres.push(v.clone());
+  });
+  // 20 face centroids -> hexagon centres
+  const hexCentres = tris.map(t =>
+    t[0].clone().add(t[1]).add(t[2]).divideScalar(3).setLength(R));
+
+  // Spherical Voronoi over these 32 seeds reproduces the panel layout.
+  // Pentagons get a small additive bias: on a real truncated icosahedron the
+  // pentagons are SMALLER than the hexagons, and an unweighted Voronoi would
+  // hand them ~35% of the surface instead of the true ~25.6%. Solved empirically.
+  const PENT_BIAS = 0.027;
+  const seeds = [
+    ...pentCentres.map(v => ({dir: v.clone().normalize(), pent: true,  bias: PENT_BIAS})),
+    ...hexCentres .map(v => ({dir: v.clone().normalize(), pent: false, bias: 0}))
+  ];
+
+  // returns {gap, pent} — gap ~0 means the point sits on a seam
+  function panelAt(dir){
+    let b1 = -Infinity, b2 = -Infinity, pent = false;
+    for (const s of seeds){
+      const d = dir.dot(s.dir) - s.bias;
+      if (d > b1){ b2 = b1; b1 = d; pent = s.pent; }
+      else if (d > b2){ b2 = d; }
+    }
+    return {gap: b1 - b2, pent};
+  }
+
+  // --- particles, coloured by which panel they fall in ---
+  const pos = new Float32Array(COUNT*3);
+  const col = new Float32Array(COUNT*3);
+  const dir = new THREE.Vector3();
+  const C_PENT = C_AQUA.clone();
+  const C_HEX  = C_TEAL.clone().lerp(C_SLATE, .35);
+  let n = 0;
+  for (let i = 0; i < COUNT; i++){
+    const phi = Math.acos(1 - 2*(i+0.5)/COUNT);
+    const theta = Math.PI * (1 + Math.sqrt(5)) * i;
+    dir.set(Math.cos(theta)*Math.sin(phi), Math.sin(theta)*Math.sin(phi), Math.cos(phi));
+
+    const {gap, pent} = panelAt(dir);
+    const onSeam = gap < 0.028;
+    if (onSeam) continue;                  // leave the seam as a clean gap
+
+    // faint brain folding inside each panel — the "mind" in the ball
+    const fold = Math.sin(dir.x*5.5)*Math.cos(dir.y*5.5)*Math.sin(dir.z*5.5);
+    const r = R * (1 + fold*0.018);
+
+    pos[n*3] = dir.x*r; pos[n*3+1] = dir.y*r; pos[n*3+2] = dir.z*r;
+
+    // pentagons read brighter, hexagons sit back; folds tint toward green
+    let c = (pent ? C_PENT : C_HEX).clone();
+    if (fold > 0.3) c.lerp(C_GREEN, .55);
+    c.multiplyScalar(pent ? 1 : 0.78);
+
+    col[n*3] = c.r; col[n*3+1] = c.g; col[n*3+2] = c.b;
+    n++;
+  }
+
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos.slice(0,n*3), 3));
+  geo.setAttribute('color',    new THREE.BufferAttribute(col.slice(0,n*3), 3));
+  const mat = new THREE.PointsMaterial({
+    size:0.019, vertexColors:true, transparent:true, opacity:.9,
+    blending:THREE.AdditiveBlending, depthWrite:false
+  });
+  BALL.add(new THREE.Points(geo, mat));
+
+  // debug hook — lets automated checks read the real baked geometry
+  window.__mbfDebug = () => ({
+    colors: geo.attributes.color.array,
+    count: geo.attributes.color.count,
+    seeds: seeds.length,
+    pentSeeds: seeds.filter(s=>s.pent).length
+  });
+
+  /* --- PANEL OUTLINES -------------------------------------------------
+     Each icosahedron face gives one hexagon: cut every edge at 1/3 and
+     2/3. Drawing all 20 hexagons traces the complete seam network, and
+     the 12 pentagons appear automatically as the gaps between them.
+     Drawn as tubes so the seams have real weight on screen.
+  --------------------------------------------------------------------- */
+  const SEAM_R = R * 1.012;
+  const seamMat = new THREE.MeshBasicMaterial({
+    color:0x87E9E7, transparent:true, opacity:.62,
+    blending:THREE.AdditiveBlending, depthWrite:false
+  });
+  const seamTubes = [];
+  tris.forEach(([A,B,C]) => {
+    const corners = [
+      A.clone().lerp(B, 1/3), A.clone().lerp(B, 2/3),
+      B.clone().lerp(C, 1/3), B.clone().lerp(C, 2/3),
+      C.clone().lerp(A, 1/3), C.clone().lerp(A, 2/3)
+    ].map(v => v.setLength(SEAM_R));
+
+    // subdivide each edge so the seam hugs the sphere instead of cutting it
+    const pts = [];
+    for (let i = 0; i < 6; i++){
+      const a = corners[i], b = corners[(i+1)%6];
+      for (let s = 0; s < 5; s++) pts.push(a.clone().lerp(b, s/5).setLength(SEAM_R));
+    }
+    const curve = new THREE.CatmullRomCurve3(pts, true, 'catmullrom', 0.5);
+    const g = new THREE.TubeGeometry(curve, 54, 0.0145, 4, true);
+    seamTubes.push(g);
+    BALL.add(new THREE.Mesh(g, seamMat));
+  });
+
+  // pentagon faces: a subtle filled disc so the 12 pentagons read instantly
+  const pentMat = new THREE.MeshBasicMaterial({
+    color:0x00B48E, transparent:true, opacity:.10,
+    blending:THREE.AdditiveBlending, side:THREE.DoubleSide, depthWrite:false});
+  const pentGeoms = [];
+  pentCentres.forEach(centre => {
+    const g = new THREE.CircleGeometry(R*0.255, 5);
+    pentGeoms.push(g);
+    const m = new THREE.Mesh(g, pentMat);
+    m.position.copy(centre.clone().setLength(R*1.005));
+    m.lookAt(0,0,0);
+    BALL.add(m);
+  });
+
+  // --- neural synapse arcs across the surface ---
+  const SYN = 26;
+  const synapses = [];
+  const synMat = new THREE.LineBasicMaterial({
+    color:0x8EC66C, transparent:true, opacity:.5,
+    blending:THREE.AdditiveBlending
+  });
+  for (let i = 0; i < SYN; i++){
+    const a = new THREE.Vector3().randomDirection().multiplyScalar(R);
+    const b = new THREE.Vector3().randomDirection().multiplyScalar(R);
+    if (a.angleTo(b) > 1.7) { b.lerp(a, .45).setLength(R); }      // keep arcs short
+    const mid = a.clone().add(b).multiplyScalar(.5).setLength(R*1.22);
+    const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
+    const g = new THREE.BufferGeometry().setFromPoints(curve.getPoints(26));
+    const line = new THREE.Line(g, synMat.clone());
+    line.material.opacity = 0;
+    synapses.push({line, g, t: Math.random()*Math.PI*2, speed: .6+Math.random()*1.1});
+    BALL.add(line);
+  }
+
+  // --- orbit rings = movement paths ---
+  const orbits = [];
+  const orbitMat = new THREE.LineBasicMaterial({
+    color:0x00B48E, transparent:true, opacity:.26, blending:THREE.AdditiveBlending});
+  for (let i = 0; i < 5; i++){
+    const rr = R*(1.14 + i*0.085), pts = [];
+    for (let p = 0; p <= 120; p++){
+      const a = (p/120)*Math.PI*2;
+      pts.push(new THREE.Vector3(Math.cos(a)*rr, Math.sin(a)*rr, Math.sin(a*3)*0.16));
+    }
+    const g = new THREE.BufferGeometry().setFromPoints(pts);
+    const line = new THREE.Line(g, orbitMat);
+    line.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+    orbits.push({line, g, dir: i%2 ? 1 : -1});
+    BALL.add(line);
+
+    // travelling node on the ring
+    if (i % 2 === 0){
+      const nodeG = new THREE.SphereGeometry(0.032, 12, 12);
+      const nodeM = new THREE.MeshBasicMaterial({color:0x87E9E7});
+      const node = new THREE.Mesh(nodeG, nodeM);
+      line.add(node);
+      orbits[orbits.length-1].node = node;
+      orbits[orbits.length-1].rr = rr;
+      orbits[orbits.length-1].geoms = [nodeG]; orbits[orbits.length-1].mats = [nodeM];
+    }
+  }
+
+  // --- pointer / drag interaction ---
+  const target = {x:0, y:0};
+  const cur = {x:0, y:0};
+  let dragging = false, lastX = 0, spin = 0;
+
+  addEventListener('pointermove', e => {
+    const nx = (e.clientX / innerWidth) * 2 - 1;
+    const ny = (e.clientY / innerHeight) * 2 - 1;
+    target.y = nx * 0.42;
+    target.x = ny * 0.30;
+    if (dragging) { spin += (e.clientX - lastX) * 0.006; lastX = e.clientX; }
+  }, {passive:true});
+  canvas.addEventListener('pointerdown', e => { dragging = true; lastX = e.clientX;
+    canvas.style.cursor='grabbing'; });
+  addEventListener('pointerup', () => { dragging = false; canvas.style.cursor='grab'; });
+  canvas.style.cursor = 'grab';
+
+  let scrollBoost = 0, lastScroll = scrollY;
+  addEventListener('scroll', () => {
+    // gentle nudge only, and hard-capped so fast scrolling can't spin it up
+    scrollBoost = Math.min(scrollBoost + Math.abs(scrollY - lastScroll) * 0.00016, .0035);
+    lastScroll = scrollY;
+  }, {passive:true});
+
+  function resize(){
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    camera.aspect = w / Math.max(1,h); camera.updateProjectionMatrix();
+    renderer.setSize(w, h, false);
+    if (w >= 1024){ BALL.position.set(2.25, 0.05, 0); BALL.scale.setScalar(.8); camera.position.z = 7.9; }
+    else          { BALL.position.set(0, 2.15, 0); BALL.scale.setScalar(.62); camera.position.z = 8.6; }
+  }
+  addEventListener('resize', resize); resize();
+
+  const tmpV = new THREE.Vector3();
+  let t = 0, raf, lastT = performance.now();
+
+  // Calm, readable idle speed: ~4°/sec => one full revolution every ~90s.
+  // Expressed per-second and multiplied by delta time, so a 120Hz display
+  // spins at the same rate as a 60Hz one instead of double speed.
+  const IDLE_SPIN = 0.070;   // radians per second
+
+  function frame(){
+    raf = requestAnimationFrame(frame);
+    const now = performance.now();
+    const dt = Math.min((now - lastT) / 1000, 0.05);   // clamp after tab-switch
+    lastT = now;
+    t += dt;
+    scrollBoost *= 0.94;
+
+    cur.x += (target.x - cur.x) * 0.045;
+    cur.y += (target.y - cur.y) * 0.045;
+
+    BALL.rotation.x = cur.x;
+    BALL.rotation.y += (IDLE_SPIN + scrollBoost * 60) * dt + spin;
+    BALL.rotation.z = cur.y * 0.12;
+    spin *= Math.pow(0.90, dt * 60);   // framerate-independent decay
+
+    // synapses fire in sequence
+    synapses.forEach(s => {
+      s.t += dt * s.speed;
+      const pulse = Math.max(0, Math.sin(s.t));
+      s.line.material.opacity = pulse * pulse * 0.62;
+    });
+
+    // orbit nodes travel their ring — slowed to match the calmer ball
+    orbits.forEach((o, i) => {
+      o.line.rotation.z += 0.05 * o.dir * dt;
+      if (o.node){
+        const a = t * (0.20 + i*0.05) * o.dir;
+        o.node.position.set(Math.cos(a)*o.rr, Math.sin(a)*o.rr, Math.sin(a*3)*0.16);
+      }
+    });
+
+    renderer.render(scene, camera);
+  }
+  if (!reduce) frame(); else { resize(); renderer.render(scene, camera); }
+
+  // pause when tab hidden / hero offscreen — saves battery
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) cancelAnimationFrame(raf);
+    else if (!reduce){ lastT = performance.now(); frame(); }   // reset clock, no jump
+  });
+})();
+</script>
+</body>
+</html>
